@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="lock-generator" ng-controller="AppCtrl">
+<head>
+	<!-- base -->
+	<base href="/" />
+	<meta charset="UTF-8" />
+	<title ng-bind="($title ? $title + ' | ' : '') + 'Lock Generator'">Lock Generator</title><!-- 60 char max -->
+	<meta name="description" content="Generate customizable combination lock patterns" /><!-- 160 char max -->
+
+	<!-- mobile -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<link rel="apple-touch-icon-precomposed" href="assets/img/touchicon.png?rev=1" type="image/png" />
+	<link rel="shortcut icon" href="assets/img/touchicon.png?rev=1" type="image/png" />
+
+	<!-- styles -->
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" />
+	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400" />
+	<link rel="stylesheet" href="assets/css/main.min.css?rev=1" />
+</head>
+<body class="flex-grow flex-center">
+	
+	<main class="flex-column flex-align-center">
+		<header class="flex-row flex-padding">
+			<label>
+				Alphabet: <select ng-model="$root.alphabetType" ng-options="a.$id as a.name for a in alphabetTypes"></select>
+			</label>
+			<label>
+				# Discs: <input type="number" ng-model="$root.numDiscs" min="3" max="10" />
+			</label>
+			<label>
+				# Notches: <input type="number" ng-model="$root.numNotches" min="3" max="10" />
+			</label>
+			<label>
+				Solution: <ul class="flex-row" style="display: inline-flex;">
+					<li ng-repeat="i in numTimes(numDiscs) track by $index">
+						<input ng-model="$root.mustIncludes[$index]" size="2" />
+					</li>
+				</ul>
+			</label>
+			<footer>
+				<button ng-click="generate()">Generate</button>
+			</footer>
+		</header>
+		
+		<figure class="padding" style="border: solid 1px #999;">
+			<ul class="flex-row flex-inline">
+				<li ng-repeat="disc in lock.getDiscs()">
+					<select ng-model="guesses[$index]">
+						<option ng-repeat="notch in disc.getNotches()" value="{{ $index }}" ng-bind="notch"></option>
+					</select>
+				</li>
+				<li>
+					<button ng-click="lock.setCurrentNotchIndexes(guesses); isCorrect = lock.isCorrect()">Check</button>
+					{{ isCorrect ? 'Correct' : 'Incorrect' }}
+				</li>
+			</ul>
+		</figure>
+		<footer class="padding">
+			Solution: {{ (solution || ['None']) | json }}
+			<button ng-click="solve()">Auto-Solve</button>
+		</footer>
+	</main>
+
+	<!-- Scripts -->
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+	<script src="assets/js/main.min.js?rev=1"></script>
+</body>
+</html>
